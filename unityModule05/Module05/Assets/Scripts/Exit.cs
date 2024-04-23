@@ -34,7 +34,7 @@ public class Exit : MonoBehaviour
                 World.Win();
                 player.SetDeath();
             }
-            else
+            else if (!player.IsDead())
             {
                 this.displayAnim.SetBool(this.id, true);
             }

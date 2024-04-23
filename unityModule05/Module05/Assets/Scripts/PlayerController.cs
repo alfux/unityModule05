@@ -88,6 +88,7 @@ public class PlayerController : MonoBehaviour
         this.state |= (int)State.Death;
         this.rg.isKinematic = true;
         this.rg.velocity = Vector2.zero;
+        GameManager.ResetStats();
     }
 
     public void ReverseOrientation()
@@ -118,6 +119,9 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
+        this.healthPoints = GameManager.GetLastHP();
+        if (!float.IsNaN(GameManager.GetLastPos().x) && !float.IsNaN(GameManager.GetLastPos().y))
+            this.transform.position = GameManager.GetLastPos();
         this.rg = this.gameObject.GetComponent<Rigidbody2D>();
         this.anim = this.GetComponent<Animator>();
         this.vectorialSpeed = Vector2.right;
@@ -133,6 +137,21 @@ public class PlayerController : MonoBehaviour
         this.damageID = Animator.StringToHash("Damage");
         this.respawnID = Animator.StringToHash("Respawn");
         GameManager.PlayBackGroundMusic();
+        GameManager.SetUnlockedStages(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    void Walk(float move)
+    {
+        this.rg.AddForce(
+            (move * this.speed - this.rg.velocity.x) * this.vectorialSpeed
+        );
+        if (!this.IsJumping())
+        {
+            if (move * this.orientation < 0)
+                this.SetTurn();
+            else
+                this.SetWalk();
+        }
     }
 
     void Controls()
@@ -148,19 +167,16 @@ public class PlayerController : MonoBehaviour
         }
         if (move != 0)
         {
-            this.rg.AddForce(
-                (move * this.speed - this.rg.velocity.x) * this.vectorialSpeed
-            );
-            if (!this.IsJumping())
-            {
-                if (move * this.orientation < 0)
-                    this.SetTurn();
-                else
-                    this.SetWalk();
-            }
+            this.Walk(move);
         }
         else
+        {
             this.UnsetWalk();
+        }
+        if (Input.GetAxis("Cancel") != 0)
+        {
+            GameManager.SetFadeIn(true);
+        }
     }
 
     void Update()
@@ -169,11 +185,14 @@ public class PlayerController : MonoBehaviour
         if (this.healthPoints <= 0 || Input.GetAxis("Reset") != 0)
         {
             this.SetDeath();
-            GameManager.ResetLeafCounter();
             GameManager.StopBackGroundMusic();
         }
-        else
+        else if (!this.IsDead())
+        {
             this.Controls();
+            GameManager.SetLastHP(this.healthPoints);
+            GameManager.SetLastPos(this.transform.position);
+        }
     }
 
     void OnCollisionStay2D(Collision2D other)
