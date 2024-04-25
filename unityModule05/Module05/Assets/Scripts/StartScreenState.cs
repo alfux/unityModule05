@@ -5,5 +5,5 @@ using UnityEngine;
 public class StartScreenState : StateMachineBehaviour
 {
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
-        => animator.enabled = false;
+        => animator.gameObject.SetActive(false);
 }

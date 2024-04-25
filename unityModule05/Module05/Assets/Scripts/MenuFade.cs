@@ -16,7 +16,14 @@ public class MenuFade : StateMachineBehaviour
         SceneManager.sceneUnloaded += this.UnsetFadeIn;
         if (SceneManager.GetActiveScene().buildIndex == 0)
         {
-            SceneManager.LoadScene(GameManager.GetUnlockedStages());
+            if (GameManager.Diary())
+            {
+                SceneManager.LoadScene(4);
+            }
+            else
+            {
+                SceneManager.LoadScene(GameManager.GetUnlockedStages());
+            }
         }
         else
         {

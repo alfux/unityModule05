@@ -16,7 +16,11 @@ public class MainMenu : MonoBehaviour
             float.IsNaN(GameManager.GetLastPos().y))
         {
             this.resumeButton.interactable = false;
-            this.resumeText.color = Color.gray;
+            this.resumeText.text = "";
+        }
+        else
+        {
+            this.resumeText.text = "Resume";
         }
     }
 
@@ -29,12 +33,14 @@ public class MainMenu : MonoBehaviour
     public void OnNewGameClick()
     {
         this.clickSound.Play();
-        GameManager.ResetStats();
+        GameManager.NewGameStats();
         GameManager.SetFadeIn(true);
     }
 
     public void OnDiaryClick()
     {
         this.clickSound.Play();
+        GameManager.SetDiary(true);
+        GameManager.SetFadeIn(true);
     }
 }

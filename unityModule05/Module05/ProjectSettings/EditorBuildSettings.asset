@@ -17,5 +17,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Stage3.unity
     guid: ee996265b026849de818bdeccc44115e
+  - enabled: 1
+    path: Assets/Scenes/Diary.unity
+    guid: 971da01c9fb484d519b8ecd91f16563e
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0

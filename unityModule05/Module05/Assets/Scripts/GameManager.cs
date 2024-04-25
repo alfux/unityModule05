@@ -9,12 +9,17 @@ public class GameManager : MonoBehaviour
     public int          leafPoints = 5;
     public GameObject   fadeIn = null;
     public AudioSource  backgroundMusic = null;
+    public Jauge        healthJauge = null;
+    public Jauge        pointsJauge = null;
 
     private int             leafCounter = 0;
+    private int             leafCounterSinceStart = 0;
+    private int             deathCounterSinceStart = 0;
     private int             unlockedStages = 0;
     private float           lastHealthPoints = 0;
     private Vector3         lastPosition = Vector3.zero;
     private List<string>    eatenLeafs = null;
+    private bool            diary = false;
 
     public static GameManager   instance = null;
 
@@ -32,6 +37,8 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         this.leafCounter = PlayerPrefs.GetInt("Score", 0);
+        this.leafCounterSinceStart = PlayerPrefs.GetInt("TotalScore", 0);
+        this.deathCounterSinceStart = PlayerPrefs.GetInt("Death", 0);
         this.unlockedStages = PlayerPrefs.GetInt("Stages", 1);
         this.lastHealthPoints = PlayerPrefs.GetFloat("HP", 3);
         this.lastPosition.x = PlayerPrefs.GetFloat("X", float.NaN);
@@ -43,6 +50,7 @@ public class GameManager : MonoBehaviour
         {
             this.eatenLeafs.Add(val);
         }
+        SceneManager.sceneLoaded += this.CountLeaves;
     }
 
     void OnDestroy()
@@ -61,7 +69,18 @@ public class GameManager : MonoBehaviour
                 PlayerPrefs.SetString(i.ToString(), elem);
                 ++i;
             }
+            PlayerPrefs.SetInt("TotalScore", this.leafCounterSinceStart);
+            PlayerPrefs.SetInt("Death", this.deathCounterSinceStart);
             PlayerPrefs.Save();
+        }
+    }
+
+    void CountLeaves(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.buildIndex != 0 && scene.buildIndex != 4)
+        {
+            this.pointsJauge.Total = GameObject.FindGameObjectsWithTag("Leaf").Length * this.leafPoints;
+            this.pointsJauge.Portion = GameManager.instance.leafCounter;
         }
     }
 
@@ -81,7 +100,11 @@ public class GameManager : MonoBehaviour
 
     public static float GetLastHP() => GameManager.instance.lastHealthPoints;
 
-    public static void SetLastHP(float val) => GameManager.instance.lastHealthPoints = val;
+    public static void SetLastHP(float val)
+    {
+        GameManager.instance.lastHealthPoints = val;
+        GameManager.instance.healthJauge.Portion = val;
+    }
 
     public static Vector3 GetLastPos() => GameManager.instance.lastPosition;
 
@@ -101,13 +124,28 @@ public class GameManager : MonoBehaviour
     public static void AddToLeafCounter(string name)
     {
         GameManager.instance.leafCounter += GameManager.instance.leafPoints;
+        GameManager.instance.leafCounterSinceStart += GameManager.instance.leafPoints;
         GameManager.instance.eatenLeafs.Add(name);
+        GameManager.instance.pointsJauge.Portion += GameManager.instance.leafPoints;
     }
+
+    public static void AddDeath() => GameManager.instance.deathCounterSinceStart += 1;
+
+    public static int GetTotalPoints() => GameManager.instance.leafCounterSinceStart;
+
+    public static int GetTotalDeath() => GameManager.instance.deathCounterSinceStart;
 
     public static void ResetLeafCounter()
     {
         GameManager.instance.leafCounter = 0;
         GameManager.instance.eatenLeafs.Clear();        
+    }
+
+    public static void NewGameStats()
+    {
+        GameManager.ResetStats();
+        GameManager.instance.leafCounterSinceStart = 0;
+        GameManager.instance.deathCounterSinceStart = 0;
     }
 
     public static void StopBackGroundMusic() => GameManager.instance.backgroundMusic.Stop();
@@ -124,4 +162,8 @@ public class GameManager : MonoBehaviour
     {
         GameManager.instance.fadeIn.SetActive(val);
     }
+
+    public static bool Diary() => GameManager.instance.diary;
+
+    public static void SetDiary(bool val) => GameManager.instance.diary = val;
 }

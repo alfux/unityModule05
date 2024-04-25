@@ -182,16 +182,21 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         this.UpdateStates();
-        if (this.healthPoints <= 0 || Input.GetAxis("Reset") != 0)
+        if (!this.IsDead())
         {
-            this.SetDeath();
-            GameManager.StopBackGroundMusic();
-        }
-        else if (!this.IsDead())
-        {
-            this.Controls();
-            GameManager.SetLastHP(this.healthPoints);
-            GameManager.SetLastPos(this.transform.position);
+            if (this.healthPoints <= 0 || Input.GetAxis("Reset") != 0)
+            {
+                GameManager.StopBackGroundMusic();
+                GameManager.SetLastHP(this.healthPoints);
+                GameManager.AddDeath();
+                this.SetDeath();
+            }
+            else
+            {
+                this.Controls();
+                GameManager.SetLastHP(this.healthPoints);
+                GameManager.SetLastPos(this.transform.position);
+            }
         }
     }
 
