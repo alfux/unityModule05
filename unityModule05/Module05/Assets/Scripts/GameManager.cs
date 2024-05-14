@@ -6,20 +6,20 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    public int          leafPoints = 5;
-    public GameObject   fadeIn = null;
-    public AudioSource  backgroundMusic = null;
-    public Jauge        healthJauge = null;
-    public Jauge        pointsJauge = null;
+    [SerializeField]public int          leafPoints = 5;
+    [SerializeField]public GameObject   fadeIn = null;
+    [SerializeField]public AudioSource  backgroundMusic = null;
+    [SerializeField]public Jauge        healthJauge = null;
+    [SerializeField]public Jauge        pointsJauge = null;
 
-    private int             leafCounter = 0;
-    private int             leafCounterSinceStart = 0;
-    private int             deathCounterSinceStart = 0;
-    private int             unlockedStages = 0;
-    private float           lastHealthPoints = 0;
-    private Vector3         lastPosition = Vector3.zero;
-    private List<string>    eatenLeafs = null;
-    private bool            diary = false;
+    [SerializeField]private int             leafCounter = 0;
+    [SerializeField]private int             leafCounterSinceStart = 0;
+    [SerializeField]private int             deathCounterSinceStart = 0;
+    [SerializeField]private int             unlockedStages = 0;
+    [SerializeField]private float           lastHealthPoints = 0;
+    [SerializeField]private Vector3         lastPosition = Vector3.zero;
+    [SerializeField]private List<string>    eatenLeafs = null;
+    [SerializeField]private bool            diary = false;
 
     public static GameManager   instance = null;
 
